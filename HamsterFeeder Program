@@ -1,0 +1,121 @@
+//เริ่มชุดโปรแกรมคำสั่ง
+
+#include <Servo.h> //include library Servo
+
+//ส่วนปล่อยอาหาร
+
+Servo myservo;
+
+int ledPin1= 11; //กำหนดตัวแปร led สีเขียว ที่ขา 11
+
+int inputpirPin= 10; //กำหนดตัวแปร pin ที่รับค่าจากPIR sensor ที่ขา 10
+
+//ส่วนเปิดพัดลม
+
+int val;
+
+int lm35 = A5; // กำหนดตัวแปร lm35 ที่ขา A5
+
+int ledPin2= 8; //กำหนดตัวแปร led สีแดง ที่ขา 8
+
+int relay= 9; //กำหนดตัวแปร relay ที่ขา 9
+
+ 
+
+void setup(){
+
+//ส่วนปล่อยอาหาร
+
+myservo.attach(12); //กำหนดServo ที่ขา 12
+
+  pinMode(ledPin1, OUTPUT); //กำหนด ledpin เป็น output
+
+  pinMode(inputpirPin, INPUT); //กำหนด inputpirPin เป็น input
+
+//ส่วนเปิดพัดลม
+
+  Serial.begin(9600); //กำหนดserial monitor ที่ช่องสัญญาณ 9600 baud
+
+  pinMode(ledPin2, OUTPUT); //กำหนด ledpin2 เป็น output
+
+  pinMode(relay, OUTPUT); //กำหนด relay เป็น output
+
+ 
+
+}
+
+void loop(){
+
+  //ส่วนปล่อยอาหาร
+
+  int value= digitalRead(inputpirPin); //กำหนดตัวแปร val ที่รับค่าจาก inputpirPin
+
+  //ส่วนชุดคำสั่งปล่อยอาหาร
+
+  if (value == HIGH)
+
+  {
+
+    digitalWrite(ledPin1, 0); //กำหนดให้ ledpin1 เป็น 0
+
+    delay(1000); //หน่วงเวลา 1000ms
+
+    myservo.write(0); // สั่งให้ Servo หมุนไปองศาที่ 0
+
+    delay(1000); // หน่วงเวลา 1000ms
+
+    myservo.write(90); // สั่งให้ Servo หมุนไปองศาที่ 90
+
+    delay(1000); // หน่วงเวลา 1000ms
+
+  }
+
+  else
+
+  {
+
+    digitalWrite(ledPin1, 1); //กำหนดให้ ledpin1 เป็น 0
+
+  }
+
+ //ส่วนเปิดพัดลม
+
+val = analogRead(lm35); //กำหนดตัวแปร val ให้รับค่าจาก lm35
+
+ float mv = ( val / 1024.0) * 5000; //แปลงค่าเป็นองศาเซลเซียส
+
+ float temp = mv / 10; //แปลงค่าเป็นองศาเซลเซียส
+
+ Serial.print("TEMPERATURE = "); //สั่งให้ serial monitor print คำว่า "Temperature"
+
+ Serial.print(temp); //ปริ้นค่า temp ที่แปลงได้
+
+ Serial.print("*C"); //ปริ้นองศาเซลเซียส
+
+ Serial.println(); //เว้นบรรทัด
+
+ delay(10000); //หน่วงเวลา 10000 ms
+
+ //ส่วนชุดคำสั่งเปิดพัดลม
+
+ if(temp >= 38){ //กำหนดหากอุณหภูมิมากกว่า 38 องศาเซลเซียส
+
+  digitalWrite(ledPin2, 1); // กำหนดให้ ledpin2 เป็น 0
+
+  digitalWrite(relay, 1); //กำหนดให้ relay เป็น 0
+
+ }
+
+ else
+
+ {
+
+  digitalWrite(ledPin2, 0); //กำหนดให้ ledpin เป็น 0
+
+  digitalWrite(relay, 0); //กำหนดให้ relay เป็น 0
+
+ }
+
+//จบการทำงาน
+
+}
